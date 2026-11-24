@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytical Chemistry: Step-by-Step Titration Masterclass</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Load FontAwesome for Lab Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        /* Custom scrollbar for sleek appearance */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .chem-sub {
+            font-size: 0.75em;
+            vertical-align: sub;
+        }
+        .chem-sup {
+            font-size: 0.75em;
+            vertical-align: super;
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Fraction styling for clear math display */
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+            margin: 0 4px;
+            font-size: 0.9em;
+        }
+        .fraction-top {
+            border-bottom: 1.5px solid currentColor;
+            padding: 0 4px 2px 4px;
+        }
+        .fraction-bottom {
+            padding: 2px 4px 0 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-200">
+                    <i class="fa-solid fa-flask-vial text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 leading-tight">Titration Mastery</h1>
+                    <p class="text-xs text-slate-500 font-medium">Part A: Structured Questions (Total: 36 Marks)</p>
+                </div>
+            </div>
+
+            <!-- Progress & Score Pill -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden sm:flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+                    <span class="text-xs font-semibold text-slate-600">Steps Completed:</span>
+                    <span id="progress-text" class="text-xs font-bold text-indigo-600">0 / 18</span>
+                </div>
+                <button onclick="resetAllProgress()" class="text-xs font-medium text-slate-500 hover:text-rose-600 transition-colors px-2 py-1 rounded-lg hover:bg-rose-50" title="Reset Progress">
+                    <i class="fa-solid fa-rotate-right mr-1"></i> Reset
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+        
+        <!-- Sidebar Question Selector -->
+        <aside class="w-full lg:w-72 flex-shrink-0">
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sticky top-24">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 px-2">Exercise Questions</h2>
+                <nav id="question-nav" class="space-y-1.5">
+                    <!-- Nav items injected via JS -->
+                </nav>
+
+                <!-- Study Tip Box -->
+                <div class="mt-6 p-4 rounded-xl bg-amber-50 border border-amber-200/80">
+                    <div class="flex items-center space-x-2 text-amber-800 font-semibold text-sm mb-1">
+                        <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                        <span>Exam Strategy</span>
+                    </div>
+                    <p class="text-xs text-amber-900/80 leading-relaxed">
+                        Always convert volumes from <strong>cm<span class="chem-sup">3</span></strong> to <strong>dm<span class="chem-sup">3</span></strong> (÷ 1000) before multiplying by molarity, and watch out for <strong>10× dilution factors</strong> (25.0 cm<span class="chem-sup">3</span> out of 250.0 cm<span class="chem-sup">3</span>)!
+                    </p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Interactive Workspace -->
+        <main class="flex-1 min-w-0">
+            <div id="workspace" class="space-y-6">
+                <!-- Dynamic Question Content Injected Here -->
+            </div>
+
+            <!-- Bottom Navigation Controls -->
+            <div class="mt-8 flex items-center justify-between pt-6 border-t border-slate-200">
+                <button id="prev-btn" onclick="navigateQuestion(-1)" class="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-700 font-medium text-sm hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Previous Question</span>
+                </button>
+                <button id="next-btn" onclick="navigateQuestion(1)" class="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-medium text-sm hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-indigo-200">
+                    <span>Next Question</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification Container (Replaces alert) -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <script>
+        // ==========================================
+        // DATA: COMPLETE STRUCTURED QUESTIONS & STEPS
+        // ==========================================
+        const questionsData = [
+            {
+                id: 1,
+                shortTitle: "Q1: Precipitation Titration",
+                marks: 7,
+                topic: "Conductimetric & Precipitation Titration",
+                icon: "fa-bolt",
+                color: "indigo",
+                prompt: `The concentration of a barium hydroxide solution can be determined by titrating it with standard sodium sulphate solution. <strong>25.0 cm<span class="chem-sup">3</span></strong> of the barium hydroxide solution requires <strong>30.00 cm<span class="chem-sup">3</span></strong> of <strong>0.020 mol dm<span class="chem-sup">-3</span></strong> sodium sulphate solution for complete reaction.`,
+                parts: [
+                    {
+                        id: "1a",
+                        label: "(a)",
+                        marks: 1,
+                        question: "Name the type of titration involved.",
+                        hint: "Look at the products formed when barium ions (Ba²⁺) meet sulphate ions (SO₄²⁻). An insoluble white solid forms!",
+                        concept: "When two aqueous solutions react to form an insoluble solid (precipitate), volumetric analysis of this reaction is classified as a <strong>precipitation titration</strong>.",
+                        steps: [
+                            {
+                                title: "Identify the reaction type",
+                                content: `Ba<span class="chem-sup">2+</span>(aq) + SO<span class="chem-sub">4</span><span class="chem-sup">2-</span>(aq) &rarr; BaSO<span class="chem-sub">4</span>(s). Since an insoluble precipitate is formed during the titration, this is a <strong>Precipitation titration</strong>.`
+                            }
+                        ],
+                        finalAnswer: "Precipitation titration",
+                        quiz: {
+                            question: "Why is this reaction NOT classified as an acid-base titration?",
+                            options: [
+                                "Neither reactant acts as an acid (proton donor) in this reaction.",
+                                "Because barium hydroxide is insoluble in water.",
+                                "Because phenolphthalein cannot be used."
+                            ],
+                            correct: 0,
+                            explanation: "Correct! Ba(OH)₂ is an alkali, and Na₂SO₄ is a neutral salt. No H⁺ transfer occurs; instead, ions combine to form solid BaSO₄."
+                        }
+                    },
+                    {
+                        id: "1b",
+                        label: "(b)",
+                        marks: 1,
+                        question: "Write a chemical equation for the reaction involved.",
+                        hint: "Swap the ions between Ba(OH)₂ and Na₂SO₄. Remember to include state symbols (aq) and (s)!",
+                        concept: "Barium sulphate (BaSO₄) is insoluble in water (s), whereas sodium hydroxide (NaOH) remains dissolved in aqueous solution (aq).",
+                        steps: [
+                            {
+                                title: "Write formulas & balance atoms",
+                                content: `Reactants: Ba(OH)<span class="chem-sub">2</span>(aq) + Na<span class="chem-sub">2</span>SO<span class="chem-sub">4</span>(aq)<br>Products: BaSO<span class="chem-sub">4</span>(s) + 2NaOH(aq)`
+                            }
+                        ],
+                        finalAnswer: `Ba(OH)<span class="chem-sub">2</span>(aq) + Na<span class="chem-sub">2</span>SO<span class="chem-sub">4</span>(aq) &rarr; BaSO<span class="chem-sub">4</span>(s) + 2NaOH(aq)`,
+                        quiz: {
+                            question: "Which species is responsible for the white precipitate observed?",
+                            options: ["NaOH(s)", "BaSO₄(s)", "Ba(OH)₂(s)"],
+                            correct: 1,
+                            explanation: "Barium sulphate, BaSO₄(s), is a classic insoluble white precipitate."
+                        }
+                    },
+                    {
+                        id: "1c",
+                        label: "(c)",
+                        marks: 3,
+                        question: "Describe briefly how the equivalence point of the titration can be determined.",
+                        hint: "Neither reactant nor product is coloured, and there is no pH indicator! How do ions in solution conduct electricity as they get removed as a solid?",
+                        concept: "Electrical conductivity depends on the concentration and mobility of free mobile ions. As Ba²⁺ and SO₄²⁻ precipitate out, conductivity drops until the equivalence point, after which adding excess Na₂SO₄ makes conductivity rise again (forming a V-shaped graph).",
+                        extraNote: `
+                        <div class="my-4 rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-50/90 via-white to-violet-50/70 p-4 sm:p-5 shadow-sm fade-in">
+                            <div class="flex items-center space-x-2 mb-2.5">
+                                <span class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs shadow-sm">
+                                    <i class="fa-solid fa-scale-balanced"></i>
+                                </span>
+                                <h4 class="text-sm sm:text-base font-bold text-slate-900">Concept Deep Dive: Equivalence Point vs. End Point</h4>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed mb-4">
+                                The <strong class="text-indigo-700">equivalence point</strong> is the exact theoretical moment when the reaction is chemically complete, while the <strong class="text-purple-700">end point</strong> is the physical moment you actually stop the titration because you see a change (like a color shift).
+                            </p>
+
+                            <!-- Responsive Comparison Table -->
+                            <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white mb-4 shadow-xs">
+                                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                                    <thead>
+                                        <tr class="bg-slate-100/90 border-b border-slate-200 text-slate-800">
+                                            <th class="py-2.5 px-3.5 font-bold w-1/5">Feature</th>
+                                            <th class="py-2.5 px-3.5 font-bold text-indigo-700 w-2/5">Equivalence Point</th>
+                                            <th class="py-2.5 px-3.5 font-bold text-purple-700 w-2/5">End Point</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-200/80 text-slate-700">
+                                        <tr class="hover:bg-slate-50/70 transition-colors">
+                                            <td class="py-2.5 px-3.5 font-semibold text-slate-900 align-top">What it is</td>
+                                            <td class="py-2.5 px-3.5 align-top"><span class="font-semibold text-indigo-700">Theoretical:</span> Moles of added titrant equal moles of analyte.</td>
+                                            <td class="py-2.5 px-3.5 align-top"><span class="font-semibold text-purple-700">Experimental:</span> The indicator changes color (or pH jumps).</td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50/70 transition-colors">
+                                            <td class="py-2.5 px-3.5 font-semibold text-slate-900 align-top">How you know</td>
+                                            <td class="py-2.5 px-3.5 align-top">Calculated from stoichiometry; invisible to the naked eye.</td>
+                                            <td class="py-2.5 px-3.5 align-top">Observed visually when you stop adding drops.</td>
+                                        </tr>
+                                        <tr class="hover:bg-slate-50/70 transition-colors">
+                                            <td class="py-2.5 px-3.5 font-semibold text-slate-900 align-top">Timing</td>
+                                            <td class="py-2.5 px-3.5 align-top">Happens first (at exact chemical neutrality/completion).</td>
+                                            <td class="py-2.5 px-3.5 align-top">Happens slightly after the equivalence point (usually by 1 extra drop).</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Simple Glass of Water Analogy -->
+                            <div class="rounded-xl bg-sky-50/90 border border-sky-200/80 p-3.5 sm:p-4 text-xs sm:text-sm text-slate-700 space-y-2">
+                                <div class="flex items-center space-x-2 font-bold text-sky-900">
+                                    <i class="fa-solid fa-glass-water text-sky-600"></i>
+                                    <span>A simple analogy: Imagine filling a glass with water.</span>
+                                </div>
+                                <ul class="space-y-1.5 pl-1">
+                                    <li class="flex items-start space-x-2">
+                                        <span class="text-indigo-600 font-bold mt-0.5">&bull;</span>
+                                        <span><strong class="text-indigo-800">Equivalence point:</strong> The exact drop that fills the glass to 100% capacity.</span>
+                                    </li>
+                                    <li class="flex items-start space-x-2">
+                                        <span class="text-purple-600 font-bold mt-0.5">&bull;</span>
+                                        <span><strong class="text-purple-800">End point:</strong> The moment you see water spill over the rim and stop pouring.</span>
+                                    </li>
+                                </ul>
+                                <p class="pt-1.5 border-t border-sky-200/70 text-slate-700 leading-relaxed">
+                                    In a good titration, you choose an indicator whose color changes right after the equivalence point, keeping the difference—called the <strong class="text-slate-900 underline decoration-indigo-400 decoration-2 underline-offset-2">titration error</strong>—as small as possible.
+                                </p>
+                            </div>
+                        </div>
+                        `,
+                        visualType: "conductivity-graph",
+                        steps: [
+                            {
+                                title: "Step 1: Measure conductivity & volume (1 mark)",
+                                content: "During the titration, measure the <strong>electrical conductivity</strong> (or current) of the reaction mixture and record the <strong>volume of sodium sulphate solution</strong> added."
+                            },
+                            {
+                                title: "Step 2: Plot graph & draw best-fit lines (1 mark)",
+                                content: "Plot a graph of <strong>electrical conductivity (current) against the volume of sodium sulphate solution added</strong>. Draw <strong>two best-fit straight lines</strong> (one for the decreasing trend, one for the increasing trend)."
+                            },
+                            {
+                                title: "Step 3: Find the intersection (1 mark)",
+                                content: "The <strong>intersection of the two straight lines</strong> corresponds to the equivalence point (minimum conductivity)."
+                            }
+                        ],
+                        finalAnswer: "1. Measure electrical conductivity and record volume of Na₂SO₄ added.<br>2. Plot conductivity against volume of Na₂SO₄ added and draw two best-fit straight lines.<br>3. The intersection of the two lines gives the equivalence point.",
+                        quiz: {
+                            question: "Why does electrical conductivity reach a minimum at the equivalence point?",
+                            options: [
+                                "All Ba²⁺ ions are precipitated out, and highly mobile OH⁻ ions are replaced by less mobile ions, with no excess Na₂SO₄ yet.",
+                                "Water stops conducting electricity completely.",
+                                "Barium sulphate solid absorbs all the electrons."
+                            ],
+                            correct: 0,
+                            explanation: "Spot on! At the equivalence point, total mobile ion concentration and ionic mobility reach their lowest point."
+                        }
+                    },
+                    {
+                        id: "1d",
+                        label: "(d)",
+                        marks: 2,
+                        question: "Calculate the concentration of the barium hydroxide solution.",
+                        hint: "Use Molarity × Volume (in dm³) = Moles. Check the mole ratio from your equation in (b)!",
+                        concept: "Stoichiometry follows a 3-step bridge: Moles of Known &rarr; Mole Ratio &rarr; Concentration of Unknown.",
+                        steps: [
+                            {
+                                title: "Step 1: Calculate moles of standard Na₂SO₄ used",
+                                content: `Volume = 30.00 cm<span class="chem-sup">3</span> = <span class="fraction"><span class="fraction-top">30.00</span><span class="fraction-bottom">1000</span></span> dm<span class="chem-sup">3</span> = 0.03000 dm<span class="chem-sup">3</span><br>
+                                Moles of Na<span class="chem-sub">2</span>SO<span class="chem-sub">4</span> = 0.020 mol dm<span class="chem-sup">-3</span> &times; 0.03000 dm<span class="chem-sup">3</span> = <strong>6.0 &times; 10<span class="chem-sup">-4</span> mol</strong>`
+                            },
+                            {
+                                title: "Step 2: Apply mole ratio (1 mark)",
+                                content: `From equation: Ba(OH)<span class="chem-sub">2</span> : Na<span class="chem-sub">2</span>SO<span class="chem-sub">4</span> = <strong>1 : 1</strong><br>
+                                &there4; Moles of Ba(OH)<span class="chem-sub">2</span> = <strong>6.0 &times; 10<span class="chem-sup">-4</span> mol</strong>`
+                            },
+                            {
+                                title: "Step 3: Calculate concentration of Ba(OH)₂ (1 mark)",
+                                content: `Concentration = <span class="fraction"><span class="fraction-top">6.0 &times; 10<span class="chem-sup">-4</span> mol</span><span class="fraction-bottom">(25.0 / 1000) dm<span class="chem-sup">3</span></span></span> = <strong>0.024 mol dm<span class="chem-sup">-3</span></strong>`
+                            }
+                        ],
+                        finalAnswer: `0.024 mol dm<span class="chem-sup">-3</span>`,
+                        quiz: {
+                            question: "What common mistake would double the calculated concentration?",
+                            options: [
+                                "Thinking the mole ratio of Ba(OH)₂ to Na₂SO₄ is 2:1 because there are two OH⁻ ions.",
+                                "Forgetting to divide 25.0 cm³ by 1000.",
+                                "Using 30.00 cm³ instead of 25.0 cm³ in the final step."
+                            ],
+                            correct: 0,
+                            explanation: "Yes! Even though there are 2 OH⁻ ions, the formula unit Ba(OH)₂ reacts with Na₂SO₄ in a strict 1:1 ratio."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 2,
+                shortTitle: "Q2: Oxalic Acid Primary Standard",
+                marks: 7,
+                topic: "Primary Standards & Permanganate Titration",
+                icon: "fa-gem",
+                color: "purple",
+                prompt: `Oxalic acid crystals (H<span class="chem-sub">2</span>C<span class="chem-sub">2</span>O<span class="chem-sub">4</span>&middot;2H<span class="chem-sub">2</span>O) can be used as a primary standard.`,
+                visualPrompt: "oxalic-structure",
+                parts: [
+                    {
+                        id: "2a",
+                        label: "(a)",
+                        marks: 1,
+                        question: "Suggest one property of oxalic acid crystals that makes it suitable to be used as a primary standard.",
+                        hint: "Think about what makes a solid reliable to weigh out accurately on an analytical balance and dissolve into a standard solution.",
+                        concept: "A primary standard must be pure, stable in air (non-hygroscopic, non-efflorescent, does not react with CO₂/O₂), soluble in water, and ideally have a high molar mass.",
+                        steps: [
+                            {
+                                title: "Select any one valid property (1 mark)",
+                                content: `<ul class="list-disc pl-5 space-y-1">
+                                    <li>It is <strong>readily available in high purity</strong>.</li>
+                                    <li>It is <strong>chemically stable</strong> (does not decompose or react with air).</li>
+                                    <li>It is <strong>highly soluble in water</strong>.</li>
+                                    <li>It <strong>does not absorb water vapour</strong> from the atmosphere (non-hygroscopic).</li>
+                                    <li>It is <strong>non-volatile and non-toxic</strong>.</li>
+                                </ul>`
+                            }
+                        ],
+                        finalAnswer: "It is readily available in high purity / chemically stable / highly soluble in water / does not absorb moisture from air.",
+                        quiz: {
+                            question: "Why is sodium hydroxide (NaOH) solid NOT suitable as a primary standard?",
+                            options: [
+                                "It absorbs moisture (deliquescent) and carbon dioxide from the air.",
+                                "It is insoluble in distilled water.",
+                                "It is a purple liquid at room temperature."
+                            ],
+                            correct: 0,
+                            explanation: "Correct! NaOH absorbs water and CO₂ from air, so its exact mass cannot be weighed accurately."
+                        }
+                    },
+                    {
+                        id: "2b",
+                        label: "(b)",
+                        marks: 2,
+                        question: "Suggest a chemical test to show the presence of the functional group in oxalic acid crystals.",
+                        hint: "Look at the structure of oxalic acid: HOOC–COOH. It contains two carboxyl groups (–COOH). How do we test for carboxylic acids?",
+                        concept: "Carboxylic acids react with carbonates or hydrogencarbonates to liberate carbon dioxide gas (effervescence).",
+                        steps: [
+                            {
+                                title: "Step 1: State the reagent (1 mark)",
+                                content: `Add the crystals (or aqueous solution) to <strong>sodium carbonate solution</strong> (Na<span class="chem-sub">2</span>CO<span class="chem-sub">3</span>) or <strong>sodium hydrogencarbonate solution</strong> (NaHCO<span class="chem-sub">3</span>).`
+                            },
+                            {
+                                title: "Step 2: State the observable change (1 mark)",
+                                content: "<strong>Colourless gas bubbles evolve</strong> (effervescence occurs; the gas turns limewater milky)."
+                            }
+                        ],
+                        finalAnswer: "Add the crystals to sodium carbonate / sodium hydrogencarbonate solution (1). Colourless gas bubbles evolve (1).",
+                        quiz: {
+                            question: "What functional group is present in oxalic acid?",
+                            options: ["Carboxyl group (-COOH)", "Hydroxyl group (-OH) of an alcohol", "Carbonyl group (C=O) of a ketone"],
+                            correct: 0,
+                            explanation: "Correct! Oxalic acid is a dicarboxylic acid containing two carboxyl (-COOH) groups."
+                        }
+                    },
+                    {
+                        id: "2c(i)",
+                        label: "(c)(i)",
+                        marks: 1,
+                        question: "Potassium permanganate solution oxidizes oxalic acid (H₂C₂O₄) to carbon dioxide and water under acidic conditions. Write a chemical equation for the reaction.",
+                        hint: "Combine the two half-equations: MnO₄⁻ + 8H⁺ + 5e⁻ → Mn²⁺ + 4H₂O and H₂C₂O₄ → 2CO₂ + 2H⁺ + 2e⁻.",
+                        concept: "Balance electrons transferred: 2 MnO₄⁻ gains 10e⁻, while 5 H₂C₂O₄ loses 10e⁻. Cancel out 10 H⁺ from the 16 H⁺ on the left to leave 6 H⁺.",
+                        steps: [
+                            {
+                                title: "Balance half-equations & combine (1 mark)",
+                                content: `Reduction: 2MnO<span class="chem-sub">4</span><span class="chem-sup">-</span> + 16H<span class="chem-sup">+</span> + 10e<span class="chem-sup">-</span> &rarr; 2Mn<span class="chem-sup">2+</span> + 8H<span class="chem-sub">2</span>O<br>
+                                Oxidation: 5H<span class="chem-sub">2</span>C<span class="chem-sub">2</span>O<span class="chem-sub">4</span> &rarr; 10CO<span class="chem-sub">2</span> + 10H<span class="chem-sup">+</span> + 10e<span class="chem-sup">-</span><br>
+                                <strong>Overall Ionic Equation:</strong><br>
+                                5H<span class="chem-sub">2</span>C<span class="chem-sub">2</span>O<span class="chem-sub">4</span>(aq) + 6H<span class="chem-sup">+</span>(aq) + 2MnO<span class="chem-sub">4</span><span class="chem-sup">-</span>(aq) &rarr; 2Mn<span class="chem-sup">2+</span>(aq) + 10CO<span class="chem-sub">2</span>(g) + 8H<span class="chem-sub">2</span>O(l)`
+                            }
+                        ],
+                        finalAnswer: `5H<span class="chem-sub">2</span>C<span class="chem-sub">2</span>O<span class="chem-sub">4</span>(aq) + 6H<span class="chem-sup">+</span>(aq) + 2MnO<span class="chem-sub">4</span><span class="chem-sup">-</span>(aq) &rarr; 2Mn<span class="chem-sup">2+</span>(aq) + 10CO<span class="chem-sub">2</span>(g) + 8H<span class="chem-sub">2</span>O(l)`,
+                        quiz: {
+                            question: "What is the mole ratio of H₂C₂O₄ to MnO₄⁻ in this redox reaction?",
+                            options: ["5 : 2", "2 : 5", "1 : 1"],
+                            correct: 0,
+                            explanation: "5 moles of H₂C₂O₄ react completely with 2 moles of MnO₄⁻."
+                        }
+                    },
+                    {
+                        id: "2c(ii)",
+                        label: "(c)(ii)",
+                        marks: 1,
+                        question: "State the expected observation at the end point of the titration.",
+                        hint: "Potassium permanganate is self-indicating! What happens when the first drop of excess purple MnO₄⁻ enters the colourless conical flask?",
+                        concept: "During titration, purple MnO₄⁻ is reduced to nearly colourless Mn²⁺. Once all oxalic acid is consumed, one extra drop of MnO₄⁻ imparts a persistent pale pink colour.",
+                        extraNote: `
+                        <div class="my-4 p-4 bg-purple-50/60 rounded-2xl border border-purple-200 flex flex-col items-center shadow-sm fade-in">
+                            <div class="flex flex-wrap items-center justify-between w-full gap-2 mb-3">
+                                <span class="text-xs font-bold uppercase tracking-wider text-purple-800 flex items-center">
+                                    <i class="fa-solid fa-flask mr-1.5 text-purple-600"></i>
+                                    Redox Titration Set-up: Acidified KMnO<span class="chem-sub">4</span> vs. Oxalic Acid
+                                </span>
+                                <span class="text-[11px] font-semibold bg-purple-100 text-purple-800 px-2.5 py-0.5 rounded-full border border-purple-200">
+                                    Self-Indicating (No Indicator Needed)
+                                </span>
+                            </div>
+                            <svg viewBox="0 0 460 285" class="w-full max-w-lg h-auto bg-white rounded-xl border border-purple-100 p-2">
+                                <!-- White Tile -->
+                                <rect x="125" y="250" width="130" height="8" rx="2" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+                                <text x="285" y="257" font-family="Inter, sans-serif" font-size="11" fill="#475569">White tile</text>
+                                <line x1="255" y1="254" x2="280" y2="254" stroke="#64748b" stroke-width="1"/>
+
+                                <!-- Conical Flask -->
+                                <path d="M175,162 L175,180 L142,243 Q140,248 146,248 L234,248 Q240,248 238,243 L205,180 L205,162" fill="none" stroke="#334155" stroke-width="2"/>
+                                <!-- Liquid in Conical Flask (Colourless Oxalic Acid + dilute H2SO4) -->
+                                <path d="M156,216 L144,242 Q142,246 147,246 L233,246 Q238,246 236,242 L224,216 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+                                
+                                <!-- Burette Tube -->
+                                <rect x="183" y="18" width="14" height="110" fill="none" stroke="#334155" stroke-width="2"/>
+                                <!-- Deep Purple KMnO4 Liquid in Burette -->
+                                <rect x="184.5" y="36" width="11" height="91" fill="#7e22ce" opacity="0.88"/>
+                                <!-- Top Meniscus Highlight -->
+                                <line x1="184.5" y1="36" x2="195.5" y2="36" stroke="#f3e8ff" stroke-width="1.5"/>
+                                <!-- Burette Graduation Ticks -->
+                                <line x1="183" y1="45" x2="188" y2="45" stroke="#ffffff" stroke-width="1"/>
+                                <line x1="183" y1="60" x2="188" y2="60" stroke="#ffffff" stroke-width="1"/>
+                                <line x1="183" y1="75" x2="188" y2="75" stroke="#ffffff" stroke-width="1"/>
+                                <line x1="183" y1="90" x2="188" y2="90" stroke="#ffffff" stroke-width="1"/>
+                                <line x1="183" y1="105" x2="188" y2="105" stroke="#ffffff" stroke-width="1"/>
+                                
+                                <!-- Stopcock & Tip -->
+                                <line x1="187" y1="128" x2="187" y2="148" stroke="#334155" stroke-width="2"/>
+                                <line x1="193" y1="128" x2="193" y2="148" stroke="#334155" stroke-width="2"/>
+                                <rect x="177" y="134" width="26" height="6" rx="2" fill="#94a3b8" stroke="#334155" stroke-width="1.5"/>
+                                <!-- Falling purple drop -->
+                                <circle cx="190" cy="155" r="2.8" fill="#7e22ce"/>
+
+                                <!-- Stand & Clamp (Left side) -->
+                                <rect x="75" y="250" width="45" height="6" fill="#64748b"/>
+                                <rect x="94" y="14" width="5" height="236" fill="#64748b"/>
+                                <rect x="99" y="82" width="84" height="5" fill="#475569"/>
+                                <rect x="179" y="79" width="22" height="11" rx="2" fill="none" stroke="#334155" stroke-width="1.5"/>
+
+                                <!-- Labels & Pointer Lines -->
+                                <!-- Top Meniscus Tip -->
+                                <line x1="197" y1="36" x2="235" y2="28" stroke="#7e22ce" stroke-width="1.2" stroke-dasharray="3 2"/>
+                                <text x="240" y="26" font-family="Inter, sans-serif" font-size="10.5" font-weight="700" fill="#6b21a8">Read top of meniscus</text>
+                                <text x="240" y="38" font-family="Inter, sans-serif" font-size="9.5" fill="#7e22ce">(solution is intensely purple)</text>
+
+                                <!-- Burette Label -->
+                                <line x1="197" y1="54" x2="235" y2="54" stroke="#334155" stroke-width="1.2"/>
+                                <text x="240" y="57" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#1e293b">Burette</text>
+
+                                <!-- Standard KMnO4 in Burette -->
+                                <line x1="197" y1="84" x2="235" y2="84" stroke="#334155" stroke-width="1.2"/>
+                                <text x="240" y="81" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1e293b">Standard KMnO₄(aq)</text>
+                                <text x="240" y="94" font-family="Inter, sans-serif" font-size="10" fill="#475569">(0.0340 mol dm⁻³, purple)</text>
+
+                                <!-- Conical Flask -->
+                                <line x1="218" y1="190" x2="245" y2="178" stroke="#334155" stroke-width="1.2"/>
+                                <text x="250" y="181" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#1e293b">Conical flask</text>
+
+                                <!-- Oxalic Acid Solution -->
+                                <line x1="228" y1="224" x2="255" y2="212" stroke="#0284c7" stroke-width="1.5"/>
+                                <text x="260" y="210" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#0369a1">25.0 cm³ Oxalic acid, H₂C₂O₄(aq)</text>
+                                <text x="260" y="223" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#0284c7">+ excess dilute H₂SO₄(aq)</text>
+                                <text x="260" y="235" font-family="Inter, sans-serif" font-size="9.5" fill="#475569">(colourless, warmed ~60°C)</text>
+                            </svg>
+                        </div>
+                        `,
+                        steps: [
+                            {
+                                title: "Identify the colour transition (1 mark)",
+                                content: "The reaction mixture changes from <strong>colourless to pale pink</strong> (or persistent pale pink)."
+                            }
+                        ],
+                        finalAnswer: "The reaction mixture changes from colourless to pale pink.",
+                        quiz: {
+                            question: "Why don't we say 'colourless to deep purple'?",
+                            options: [
+                                "Because at the exact end point, only a tiny excess (1 drop) of MnO₄⁻ is present, giving a pale pink tint.",
+                                "Because MnO₄⁻ is pink in the burette.",
+                                "Because CO₂ bleaches the purple colour."
+                            ],
+                            correct: 0,
+                            explanation: "Exactly! A deep purple colour would mean you overshot the end point significantly."
+                        }
+                    },
+                    {
+                        id: "2c(iii)",
+                        label: "(c)(iii)",
+                        marks: 2,
+                        question: "In an experiment, oxalic acid was made up to 250.0 cm³ solution. 25.0 cm³ of the solution required 23.00 cm³ of 0.0340 mol dm⁻³ acidified KMnO₄ solution. Calculate the mass of oxalic acid (H₂C₂O₄) present in the 250.0 cm³ solution. (RAM: H = 1.0, C = 12.0, O = 16.0)",
+                        hint: "Don't forget the 250.0 cm³ / 25.0 cm³ = 10× scaling factor! Also note the question asks for mass of anhydrous oxalic acid (H₂C₂O₄), not the hydrate.",
+                        concept: "Find moles of MnO₄⁻ &rarr; multiply by 5/2 for moles of H₂C₂O₄ in 25.0 cm³ &rarr; multiply by 10 for 250.0 cm³ &rarr; multiply by molar mass (90.0 g mol⁻¹).",
+                        steps: [
+                            {
+                                title: "Step 1: Moles of MnO₄⁻ & H₂C₂O₄ in 25.0 cm³",
+                                content: `Moles of MnO<span class="chem-sub">4</span><span class="chem-sup">-</span> = 0.0340 mol dm<span class="chem-sup">-3</span> &times; <span class="fraction"><span class="fraction-top">23.00</span><span class="fraction-bottom">1000</span></span> dm<span class="chem-sup">3</span> = 7.82 &times; 10<span class="chem-sup">-4</span> mol<br>
+                                Moles of H<span class="chem-sub">2</span>C<span class="chem-sub">2</span>O<span class="chem-sub">4</span> in 25.0 cm<span class="chem-sup">3</span> = 7.82 &times; 10<span class="chem-sup">-4</span> mol &times; <span class="fraction"><span class="fraction-top">5</span><span class="fraction-bottom">2</span></span> = 1.955 &times; 10<span class="chem-sup">-3</span> mol (1.96 &times; 10<span class="chem-sup">-3</span> mol)`
+                            },
+                            {
+                                title: "Step 2: Scale up to 250.0 cm³ volumetric flask (1 mark)",
+                                content: `Moles of H<span class="chem-sub">2</span>C<span class="chem-sub">2</span>O<span class="chem-sub">4</span> in 250.0 cm<span class="chem-sup">3</span> = 1.955 &times; 10<span class="chem-sup">-3</span> mol &times; <span class="fraction"><span class="fraction-top">250.0</span><span class="fraction-bottom">25.0</span></span> = <strong>0.01955 mol (0.0196 mol)</strong>`
+                            },
+                            {
+                                title: "Step 3: Calculate mass of H₂C₂O₄ (1 mark)",
+                                content: `Molar mass of H<span class="chem-sub">2</span>C<span class="chem-sub">2</span>O<span class="chem-sub">4</span> = (1.0 &times; 2) + (12.0 &times; 2) + (16.0 &times; 4) = 90.0 g mol<span class="chem-sup">-1</span><br>
+                                Mass = 0.01955 mol &times; 90.0 g mol<span class="chem-sup">-1</span> = <strong>1.76 g</strong>`
+                            }
+                        ],
+                        finalAnswer: "1.76 g",
+                        quiz: {
+                            question: "Why did we multiply by 250.0 / 25.0?",
+                            options: [
+                                "Only a 25.0 cm³ portion (aliquot) was titrated out of the total 250.0 cm³ solution.",
+                                "Because oxalic acid was diluted 10 times with acid.",
+                                "Because there are 10 carbon atoms in the equation."
+                            ],
+                            correct: 0,
+                            explanation: "Correct! The titration only measured one-tenth of the total sample dissolved in the volumetric flask."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 3,
+                shortTitle: "Q3: Purity of Sodium Sulphite",
+                marks: 7,
+                topic: "Percentage Purity & Redox Titration",
+                icon: "fa-vial-circle-check",
+                color: "emerald",
+                prompt: `An experiment was performed to determine the percentage purity of a sample of sodium sulphite solid. <strong>0.495 g</strong> of the sample was dissolved in distilled water and made up to a <strong>250.0 cm<span class="chem-sup">3</span></strong> solution. <strong>25.0 cm<span class="chem-sup">3</span></strong> of the solution required <strong>15.25 cm<span class="chem-sup">3</span></strong> of <strong>0.0100 mol dm<span class="chem-sup">-3</span></strong> acidified potassium permanganate solution for complete reaction.`,
+                parts: [
+                    {
+                        id: "3a",
+                        label: "(a)",
+                        marks: 2,
+                        question: "Suggest a chemical test for detecting the presence of sulphite ions in the solid sample.",
+                        hint: "When acid is added to sulphite ions (SO₃²⁻), sulphur dioxide gas (SO₂) is released. How do we test for SO₂ gas?",
+                        concept: "Sulphite ions react with dilute acid to liberate SO₂(g), a reducing gas that reduces orange dichromate(VI) ions (Cr₂O₇²⁻) to green chromium(III) ions (Cr³⁺).",
+                        steps: [
+                            {
+                                title: "Step 1: Reagent and gas test setup (1 mark)",
+                                content: "Add the solid sample to <strong>dilute hydrochloric acid</strong> (or dilute sulphuric acid) and test the gas evolved with a piece of filter paper soaked with <strong>acidified potassium dichromate solution</strong>."
+                            },
+                            {
+                                title: "Step 2: Expected observation (1 mark)",
+                                content: "The gas turns the filter paper from <strong>orange to green</strong>."
+                            }
+                        ],
+                        finalAnswer: "Add dilute hydrochloric acid to the sample and test the gas evolved with filter paper soaked with acidified potassium dichromate solution (1). The filter paper turns from orange to green (1).",
+                        quiz: {
+                            question: "Why should you NOT use limewater alone to confirm sulphite ions?",
+                            options: [
+                                "Both CO₂ (from carbonate impurities) and SO₂ turn limewater milky!",
+                                "SO₂ does not react with limewater at all.",
+                                "Limewater turns purple with sulphite ions."
+                            ],
+                            correct: 0,
+                            explanation: "Great catch! Acidified potassium dichromate distinguishes SO₂ (reducing agent) from CO₂."
+                        }
+                    },
+                    {
+                        id: "3b",
+                        label: "(b)",
+                        marks: 1,
+                        question: "Write an ionic equation for the redox reaction involved in the titration.",
+                        hint: "MnO₄⁻ is reduced to Mn²⁺ (gains 5e⁻), while SO₃²⁻ is oxidized to SO₄²⁻ (loses 2e⁻).",
+                        concept: "Balance the electron transfer (5 × 2 = 10 electrons), then balance oxygen with H₂O and hydrogen with H⁺.",
+                        steps: [
+                            {
+                                title: "Combine half-equations (1 mark)",
+                                content: `Reduction: 2MnO<span class="chem-sub">4</span><span class="chem-sup">-</span> + 16H<span class="chem-sup">+</span> + 10e<span class="chem-sup">-</span> &rarr; 2Mn<span class="chem-sup">2+</span> + 8H<span class="chem-sub">2</span>O<br>
+                                Oxidation: 5SO<span class="chem-sub">3</span><span class="chem-sup">2-</span> + 5H<span class="chem-sub">2</span>O &rarr; 5SO<span class="chem-sub">4</span><span class="chem-sup">2-</span> + 10H<span class="chem-sup">+</span> + 10e<span class="chem-sup">-</span><br>
+                                <strong>Overall Ionic Equation:</strong><br>
+                                2MnO<span class="chem-sub">4</span><span class="chem-sup">-</span>(aq) + 5SO<span class="chem-sub">3</span><span class="chem-sup">2-</span>(aq) + 6H<span class="chem-sup">+</span>(aq) &rarr; 2Mn<span class="chem-sup">2+</span>(aq) + 5SO<span class="chem-sub">4</span><span class="chem-sup">2-</span>(aq) + 3H<span class="chem-sub">2</span>O(l)`
+                            }
+                        ],
+                        finalAnswer: `2MnO<span class="chem-sub">4</span><span class="chem-sup">-</span>(aq) + 5SO<span class="chem-sub">3</span><span class="chem-sup">2-</span>(aq) + 6H<span class="chem-sup">+</span>(aq) &rarr; 2Mn<span class="chem-sup">2+</span>(aq) + 5SO<span class="chem-sub">4</span><span class="chem-sup">2-</span>(aq) + 3H<span class="chem-sub">2</span>O(l)`,
+                        quiz: {
+                            question: "What is the oxidation number change of sulphur in this reaction?",
+                            options: ["From +4 to +6", "From +6 to +4", "From +2 to +6"],
+                            correct: 0,
+                            explanation: "In SO₃²⁻, S is +4. In SO₄²⁻, S is +6. Each S atom loses 2 electrons."
+                        }
+                    },
+                    {
+                        id: "3c",
+                        label: "(c)",
+                        marks: 1,
+                        question: "State the colour change at the end point of the titration.",
+                        hint: "Just like Question 2(c)(ii), KMnO₄ is in the burette and the conical flask starts colourless.",
+                        concept: "Self-indicating permanganate titration in a colourless analyte solution always ends with a persistent pale pink colour.",
+                        visualType: "sulphite-titration-diagram",
+                        steps: [
+                            {
+                                title: "State colour change (1 mark)",
+                                content: "The reaction mixture changes from <strong>colourless to pale pink</strong>."
+                            }
+                        ],
+                        finalAnswer: "The reaction mixture changes from colourless to pale pink.",
+                        quiz: {
+                            question: "Which ion causes the pale pink colour at the end point?",
+                            options: ["Unreacted MnO₄⁻(aq)", "Mn²⁺(aq)", "SO₄²⁻(aq)"],
+                            correct: 0,
+                            explanation: "Correct! Excess permanganate ions (MnO₄⁻) impart the pale pink colour."
+                        }
+                    },
+                    {
+                        id: "3d",
+                        label: "(d)",
+                        marks: 3,
+                        question: "Calculate the percentage purity of the sample of sodium sulphite solid. (RAM: O = 16.0, Na = 23.0, S = 32.1)",
+                        hint: "Calculate the pure mass of Na₂SO₃ present in the 250.0 cm³ flask, then divide by the impure sample mass (0.495 g) × 100%.",
+                        concept: "Percentage Purity = (Mass of pure Na₂SO₃ / Total mass of impure sample) × 100%.",
+                        steps: [
+                            {
+                                title: "Step 1: Moles of MnO₄⁻ & SO₃²⁻ in 250.0 cm³ (1 mark)",
+                                content: `Moles of MnO<span class="chem-sub">4</span><span class="chem-sup">-</span> = 0.0100 mol dm<span class="chem-sup">-3</span> &times; <span class="fraction"><span class="fraction-top">15.25</span><span class="fraction-bottom">1000</span></span> dm<span class="chem-sup">3</span> = 1.525 &times; 10<span class="chem-sup">-4</span> mol<br>
+                                Moles of SO<span class="chem-sub">3</span><span class="chem-sup">2-</span> in 25.0 cm<span class="chem-sup">3</span> = 1.525 &times; 10<span class="chem-sup">-4</span> &times; <span class="fraction"><span class="fraction-top">5</span><span class="fraction-bottom">2</span></span> = 3.8125 &times; 10<span class="chem-sup">-4</span> mol<br>
+                                Moles of SO<span class="chem-sub">3</span><span class="chem-sup">2-</span> in 250.0 cm<span class="chem-sup">3</span> = 3.8125 &times; 10<span class="chem-sup">-4</span> &times; <span class="fraction"><span class="fraction-top">250.0</span><span class="fraction-bottom">25.0</span></span> = <strong>3.81 &times; 10<span class="chem-sup">-3</span> mol</strong> (or 3.83 &times; 10<span class="chem-sup">-3</span> mol using rounded intermediates)`
+                            },
+                            {
+                                title: "Step 2: Calculate mass of pure Na₂SO₃ (1 mark)",
+                                content: `Molar mass of Na<span class="chem-sub">2</span>SO<span class="chem-sub">3</span> = (23.0 &times; 2) + 32.1 + (16.0 &times; 3) = 126.1 g mol<span class="chem-sup">-1</span><br>
+                                Mass of Na<span class="chem-sub">2</span>SO<span class="chem-sub">3</span> = 3.8125 &times; 10<span class="chem-sup">-3</span> mol &times; 126.1 g mol<span class="chem-sup">-1</span> = <strong>0.481 g</strong> (0.483 g with intermediate rounding)`
+                            },
+                            {
+                                title: "Step 3: Calculate percentage purity (1 mark)",
+                                content: `Percentage purity = <span class="fraction"><span class="fraction-top">0.481 g</span><span class="fraction-bottom">0.495 g</span></span> &times; 100% = <strong>97.1%</strong> (or <strong>97.6%</strong> using 0.483 g — both accepted in marking schemes!)`
+                            }
+                        ],
+                        finalAnswer: "97.6% (or 97.1% without intermediate rounding)",
+                        quiz: {
+                            question: "Why is sodium sulphite solid often less than 100% pure?",
+                            options: [
+                                "It slowly oxidizes in air to form sodium sulphate (Na₂SO₄).",
+                                "It evaporates into sulphur dioxide gas.",
+                                "It reacts with nitrogen in the air."
+                            ],
+                            correct: 0,
+                            explanation: "Yes! Atmospheric oxygen slowly oxidizes Na₂SO₃ into Na₂SO₄, which does not react with KMnO₄."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 4,
+                shortTitle: "Q4: Mohr's Method (Chloride)",
+                marks: 7,
+                topic: "Argentometric Precipitation Titration",
+                icon: "fa-droplet",
+                color: "amber",
+                prompt: `The concentration of chloride ions in a water sample was determined by <strong>Mohr’s method</strong>. <strong>25.0 cm<span class="chem-sup">3</span></strong> of the water sample required <strong>20.60 cm<span class="chem-sup">3</span></strong> of <strong>0.105 mol dm<span class="chem-sup">-3</span></strong> silver nitrate solution to reach the end point of the titration.`,
+                parts: [
+                    {
+                        id: "4a",
+                        label: "(a)",
+                        marks: 3,
+                        question: "Draw a labelled diagram for the titration set-up. Include the indicator used in the diagram.",
+                        hint: "Silver nitrate goes in the burette. What goes in the conical flask? The water sample + potassium chromate (K₂CrO₄) indicator!",
+                        concept: "A standard titration diagram requires a clamped burette above a conical flask (with a white tile underneath), clear labels for titrant, analyte, and the specific indicator (potassium chromate solution).",
+                        visualType: "mohr-diagram",
+                        steps: [
+                            {
+                                title: "Check all 3 marking points",
+                                content: `<ul class="list-disc pl-5 space-y-1">
+                                    <li><strong>1 mark:</strong> Correct drawing of titration apparatus (burette held vertically with stand/clamp, conical flask below, liquid levels drawn).</li>
+                                    <li><strong>1 mark:</strong> Correct labels for <em>standard silver nitrate solution</em> (in burette) and <em>water sample</em> (in conical flask).</li>
+                                    <li><strong>1 mark:</strong> Correct label for the indicator used: <strong>potassium chromate solution</strong> (K<span class="chem-sub">2</span>CrO<span class="chem-sub">4</span>).</li>
+                                </ul>`
+                            }
+                        ],
+                        finalAnswer: "See interactive labelled titration diagram above.",
+                        quiz: {
+                            question: "Why must potassium chromate (K₂CrO₄) be used instead of potassium dichromate (K₂Cr₂O₇)?",
+                            options: [
+                                "Mohr's method requires chromate ions (CrO₄²⁻) in neutral/slightly alkaline conditions to form Ag₂CrO₄.",
+                                "Potassium dichromate is colourless.",
+                                "Silver dichromate explodes on contact with water."
+                            ],
+                            correct: 0,
+                            explanation: "Correct! CrO₄²⁻ (yellow) reacts with excess Ag⁺ at the end point to form reddish-brown Ag₂CrO₄."
+                        }
+                    },
+                    {
+                        id: "4b",
+                        label: "(b)",
+                        marks: 1,
+                        question: "State the expected observation at the end point of the titration.",
+                        hint: "First, white AgCl precipitates. Once Cl⁻ runs out, Ag⁺ reacts with yellow CrO₄²⁻ to form silver chromate. What colour is Ag₂CrO₄?",
+                        concept: "Silver chloride (AgCl) is less soluble than silver chromate (Ag₂CrO₄), so AgCl precipitates first. At the end point, reddish-brown Ag₂CrO₄ precipitates.",
+                        steps: [
+                            {
+                                title: "State end-point precipitate colour (1 mark)",
+                                content: "A <strong>reddish-brown precipitate</strong> forms (in the yellow solution / white suspension)."
+                            }
+                        ],
+                        finalAnswer: "A reddish-brown precipitate forms.",
+                        quiz: {
+                            question: "What colour is the mixture in the conical flask BEFORE the end point is reached?",
+                            options: [
+                                "A white precipitate suspended in a yellow solution.",
+                                "A clear blue solution.",
+                                "A dark green precipitate."
+                            ],
+                            correct: 0,
+                            explanation: "Right! White AgCl precipitate is suspended in the yellow K₂CrO₄ indicator solution until the reddish-brown Ag₂CrO₄ appears."
+                        }
+                    },
+                    {
+                        id: "4c",
+                        label: "(c)",
+                        marks: 1,
+                        question: "Write the chemical equation for the reaction associated with the observation in (b).",
+                        hint: "Write the ionic equation for the formation of the reddish-brown silver chromate precipitate.",
+                        concept: "Two Ag⁺ ions combine with one CrO₄²⁻ ion to form solid Ag₂CrO₄.",
+                        steps: [
+                            {
+                                title: "Write balanced ionic equation with state symbols (1 mark)",
+                                content: `2Ag<span class="chem-sup">+</span>(aq) + CrO<span class="chem-sub">4</span><span class="chem-sup">2-</span>(aq) &rarr; Ag<span class="chem-sub">2</span>CrO<span class="chem-sub">4</span>(s)`
+                            }
+                        ],
+                        finalAnswer: `2Ag<span class="chem-sup">+</span>(aq) + CrO<span class="chem-sub">4</span><span class="chem-sup">2-</span>(aq) &rarr; Ag<span class="chem-sub">2</span>CrO<span class="chem-sub">4</span>(s)`,
+                        quiz: {
+                            question: "Notice the question asks for the reaction in (b), NOT the main titration reaction! What is the main titration reaction?",
+                            options: [
+                                "Ag⁺(aq) + Cl⁻(aq) → AgCl(s)",
+                                "Ag⁺(aq) + NO₃⁻(aq) → AgNO₃(s)",
+                                "2Cl⁻(aq) → Cl₂(g) + 2e⁻"
+                            ],
+                            correct: 0,
+                            explanation: "Yes! Always read carefully: (c) asks for the indicator reaction in (b), while (d) uses the main reaction Ag⁺ + Cl⁻ → AgCl."
+                        }
+                    },
+                    {
+                        id: "4d",
+                        label: "(d)",
+                        marks: 2,
+                        question: "Calculate the concentration of chloride ions in the water sample.",
+                        hint: "Ag⁺ and Cl⁻ react in a 1:1 ratio. Notice there was NO dilution step in this question!",
+                        concept: "Directly relate moles of AgNO₃ delivered from the burette to moles of Cl⁻ in the 25.0 cm³ water sample.",
+                        steps: [
+                            {
+                                title: "Step 1: Moles of AgNO₃ and Cl⁻ (1 mark)",
+                                content: `Ag<span class="chem-sup">+</span>(aq) + Cl<span class="chem-sup">-</span>(aq) &rarr; AgCl(s)<br>
+                                Moles of AgNO<span class="chem-sub">3</span> = 0.105 mol dm<span class="chem-sup">-3</span> &times; <span class="fraction"><span class="fraction-top">20.60</span><span class="fraction-bottom">1000</span></span> dm<span class="chem-sup">3</span> = 2.163 &times; 10<span class="chem-sup">-3</span> mol (2.16 &times; 10<span class="chem-sup">-3</span> mol)<br>
+                                &there4; Moles of Cl<span class="chem-sup">-</span> ions in 25.0 cm<span class="chem-sup">3</span> water sample = <strong>2.16 &times; 10<span class="chem-sup">-3</span> mol</strong>`
+                            },
+                            {
+                                title: "Step 2: Calculate concentration of Cl⁻ (1 mark)",
+                                content: `Concentration of Cl<span class="chem-sup">-</span> = <span class="fraction"><span class="fraction-top">2.163 &times; 10<span class="chem-sup">-3</span> mol</span><span class="fraction-bottom">(25.0 / 1000) dm<span class="chem-sup">3</span></span></span> = <strong>0.0865 mol dm<span class="chem-sup">-3</span></strong> (or <strong>0.0864 mol dm<span class="chem-sup">-3</span></strong> using 2.16 &times; 10<span class="chem-sup">-3</span>)`
+                            }
+                        ],
+                        finalAnswer: `0.0864 mol dm<span class="chem-sup">-3</span> (or 0.0865 mol dm<span class="chem-sup">-3</span>)`,
+                        quiz: {
+                            question: "Why did we NOT multiply by 10 in this calculation?",
+                            options: [
+                                "Because the 25.0 cm³ water sample was titrated directly without first diluting it to 250.0 cm³.",
+                                "Because silver nitrate is a 10% solution.",
+                                "Because chloride ions have a -1 charge."
+                            ],
+                            correct: 0,
+                            explanation: "Spot on! Always check the procedure to see if a volumetric flask dilution occurred."
+                        }
+                    }
+                ]
+            },
+            {
+                id: 5,
+                shortTitle: "Q5: Iodometric Bleach Analysis",
+                marks: 8,
+                topic: "Indirect Iodometric Titration",
+                icon: "fa-vials",
+                color: "blue",
+                prompt: `The concentration of hypochlorite ions (OCl<span class="chem-sup">-</span>) in a bottle of commercial chlorine bleach can be determined by the following procedure:<br>
+                <div class="mt-3 bg-slate-100/80 p-3.5 rounded-xl border border-slate-200 text-xs sm:text-sm space-y-1.5 text-slate-700">
+                    <div><strong>Step 1:</strong> Transfer 25.0 cm<span class="chem-sup">3</span> of the bleach sample into a 250.0 cm<span class="chem-sup">3</span> volumetric flask.</div>
+                    <div><strong>Step 2:</strong> Add distilled water up to the graduation mark of the flask. Stopper the flask, invert it several times to mix the content well.</div>
+                    <div><strong>Step 3:</strong> Transfer 25.0 cm<span class="chem-sup">3</span> of diluted bleach solution into a conical flask.</div>
+                    <div><strong>Step 4:</strong> Add 10.0 cm<span class="chem-sup">3</span> of 0.5 mol dm<span class="chem-sup">-3</span> sulphuric acid and 10.0 cm<span class="chem-sup">3</span> of 0.5 mol dm<span class="chem-sup">-3</span> potassium iodide solution to the conical flask.</div>
+                    <div><strong>Step 5:</strong> Titrate the resultant mixture with standard sodium thiosulphate solution. When the resultant mixture turns pale yellow, an indicator is added to the resultant mixture.</div>
+                </div>`,
+                parts: [
+                    {
+                        id: "5a",
+                        label: "(a)",
+                        marks: 1,
+                        question: "Name the apparatus used for transferring 25.0 cm³ of diluted bleach solution into a conical flask in Step 3.",
+                        hint: "Which piece of volumetric glassware is specifically calibrated to deliver a single fixed volume of 25.0 cm³ with high accuracy?",
+                        concept: "A pipette (specifically a 25.0 cm³ volumetric/transfer pipette) delivers a fixed accurate volume.",
+                        steps: [
+                            {
+                                title: "Identify apparatus with volume specification (1 mark)",
+                                content: `<strong>25.0 cm<span class="chem-sup">3</span> pipette</strong> (include the capacity 25.0 cm³ for full precision).`
+                            }
+                        ],
+                        finalAnswer: "25.0 cm³ pipette",
+                        quiz: {
+                            question: "Why should a measuring cylinder NOT be used in Step 3?",
+                            options: [
+                                "A measuring cylinder is not accurate enough for quantitative titration transfers.",
+                                "Bleach dissolves glass measuring cylinders.",
+                                "A measuring cylinder cannot hold 25.0 cm³."
+                            ],
+                            correct: 0,
+                            explanation: "Correct! Measuring cylinders have lower precision (±0.5 cm³) compared to a volumetric pipette (±0.06 cm³)."
+                        }
+                    },
+                    {
+                        id: "5b",
+                        label: "(b)",
+                        marks: 1,
+                        question: "State the expected observation when potassium iodide solution is added to the diluted bleach solution in Step 4.",
+                        hint: "Hypochlorite ions (OCl⁻) oxidize iodide ions (I⁻) into aqueous iodine (I₂) under acidic conditions. What colour is aqueous iodine?",
+                        concept: "OCl⁻(aq) + 2I⁻(aq) + 2H⁺(aq) &rarr; I₂(aq) + Cl⁻(aq) + H₂O(l). Liberated I₂ dissolves in excess KI to form a brown triiodide solution.",
+                        steps: [
+                            {
+                                title: "State colour change (1 mark)",
+                                content: "The solution changes from <strong>colourless to brown</strong> (or yellow-brown)."
+                            }
+                        ],
+                        finalAnswer: "The solution changes from colourless to brown.",
+                        quiz: {
+                            question: "What species causes the brown colour in Step 4?",
+                            options: ["Aqueous iodine, I₂(aq) (as I₃⁻)", "Chlorine gas, Cl₂(g)", "Potassium ions, K⁺(aq)"],
+                            correct: 0,
+                            explanation: "Yes! I₂(aq) liberated by the oxidation of I⁻ gives the characteristic brown colour."
+                        }
+                    },
+                    {
+                        id: "5c(i)",
+                        label: "(c)(i)",
+                        marks: 1,
+                        question: "Suggest an indicator for the titration in Step 5.",
+                        hint: "Which indicator forms an intense dark-blue complex with trace amounts of iodine?",
+                        concept: "Starch solution turns dark blue (blue-black) in the presence of iodine and turns colourless at the end point when all I₂ is reduced to I⁻.",
+                        steps: [
+                            {
+                                title: "Name the indicator (1 mark)",
+                                content: "<strong>Starch solution</strong>"
+                            }
+                        ],
+                        finalAnswer: "Starch solution",
+                        quiz: {
+                            question: "What is the colour change at the end point AFTER starch is added?",
+                            options: ["Dark blue (blue-black) to colourless", "Colourless to dark blue", "Brown to pale pink"],
+                            correct: 0,
+                            explanation: "Correct! Adding starch to the pale yellow solution turns it dark blue, and the final drop of thiosulphate turns it colourless."
+                        }
+                    },
+                    {
+                        id: "5c(ii)",
+                        label: "(c)(ii)",
+                        marks: 1,
+                        question: "Explain why the indicator should be added after the resultant mixture turns pale yellow.",
+                        hint: "If iodine concentration is still very high (dark brown solution), starch binds too tightly to the iodine!",
+                        concept: "At high iodine concentrations, starch forms a water-insoluble complex that releases iodine very slowly, causing an inaccurate end point.",
+                        steps: [
+                            {
+                                title: "Explain starch-iodine complex issue (1 mark)",
+                                content: "If starch solution is added too early (when iodine concentration is high), iodine will react with starch to form a <strong>water-insoluble complex</strong>. This may <strong>reduce the amount of free iodine</strong> reacting in the resultant mixture (leading to an inaccurate/delayed end point)."
+                            }
+                        ],
+                        finalAnswer: "If starch solution is added too early, iodine will react with starch to form a water-insoluble complex. This may reduce the amount of iodine in the resultant mixture.",
+                        quiz: {
+                            question: "What does 'pale yellow' indicate about the solution in Step 5?",
+                            options: [
+                                "Most of the iodine has already reacted, so the remaining iodine concentration is low.",
+                                "All the sodium thiosulphate has decomposed.",
+                                "The bleach has turned back into chlorine gas."
+                            ],
+                            correct: 0,
+                            explanation: "Exactly! Waiting until pale yellow ensures [I₂] is low enough that the starch-iodine complex remains reversible and soluble."
+                        }
+                    },
+                    {
+                        id: "5d(i)",
+                        label: "(d)(i)",
+                        marks: 1,
+                        question: "25.0 cm³ of diluted bleach solution requires 20.15 cm³ of 0.0500 mol dm⁻³ sodium thiosulphate solution for complete reaction. Write the equation for the reaction involved.",
+                        hint: "Thiosulphate ions (S₂O₃²⁻) reduce iodine (I₂) to iodide ions (I⁻), while forming tetrathionate ions (S₄O₆²⁻).",
+                        concept: "I₂(aq) + 2S₂O₃²⁻(aq) &rarr; 2I⁻(aq) + S₄O₆²⁻(aq).",
+                        steps: [
+                            {
+                                title: "Write balanced ionic equation (1 mark)",
+                                content: `I<span class="chem-sub">2</span>(aq) + 2S<span class="chem-sub">2</span>O<span class="chem-sub">3</span><span class="chem-sup">2-</span>(aq) &rarr; 2I<span class="chem-sup">-</span>(aq) + S<span class="chem-sub">4</span>O<span class="chem-sub">6</span><span class="chem-sup">2-</span>(aq)`
+                            }
+                        ],
+                        finalAnswer: `I<span class="chem-sub">2</span>(aq) + 2S<span class="chem-sub">2</span>O<span class="chem-sub">3</span><span class="chem-sup">2-</span>(aq) &rarr; 2I<span class="chem-sup">-</span>(aq) + S<span class="chem-sub">4</span>O<span class="chem-sub">6</span><span class="chem-sup">2-</span>(aq)`,
+                        quiz: {
+                            question: "What is the mole ratio of I₂ to S₂O₃²⁻?",
+                            options: ["1 : 2", "2 : 1", "1 : 1"],
+                            correct: 0,
+                            explanation: "1 mole of I₂ reacts with 2 moles of S₂O₃²⁻."
+                        }
+                    },
+                    {
+                        id: "5d(ii)",
+                        label: "(d)(ii)",
+                        marks: 3,
+                        question: "Calculate the concentration of hypochlorite ions in the commercial chlorine bleach.",
+                        hint: "Follow the chain: Moles of S₂O₃²⁻ &rarr; Moles of I₂ (÷2) &rarr; Moles of OCl⁻ in 25.0 cm³ diluted bleach (1:1) &rarr; Moles in 250.0 cm³ (×10) &rarr; Divide by original bleach volume (25.0 cm³ = 0.0250 dm³).",
+                        concept: "1 mol OCl⁻ produces 1 mol I₂, which consumes 2 mol S₂O₃²⁻. Therefore, moles of OCl⁻ = ½ × moles of S₂O₃²⁻.",
+                        steps: [
+                            {
+                                title: "Step 1: Moles of S₂O₃²⁻ & I₂ produced (1 mark)",
+                                content: `Moles of Na<span class="chem-sub">2</span>S<span class="chem-sub">2</span>O<span class="chem-sub">3</span> = 0.0500 mol dm<span class="chem-sup">-3</span> &times; <span class="fraction"><span class="fraction-top">20.15</span><span class="fraction-bottom">1000</span></span> dm<span class="chem-sup">3</span> = 1.0075 &times; 10<span class="chem-sup">-3</span> mol (1.01 &times; 10<span class="chem-sup">-3</span> mol)<br>
+                                From I<span class="chem-sub">2</span> + 2S<span class="chem-sub">2</span>O<span class="chem-sub">3</span><span class="chem-sup">2-</span> &rarr; 2I<span class="chem-sup">-</span> + S<span class="chem-sub">4</span>O<span class="chem-sub">6</span><span class="chem-sup">2-</span>:<br>
+                                Moles of I<span class="chem-sub">2</span> = <span class="fraction"><span class="fraction-top">1.0075 &times; 10<span class="chem-sup">-3</span></span><span class="fraction-bottom">2</span></span> = <strong>5.0375 &times; 10<span class="chem-sup">-4</span> mol</strong> (5.05 &times; 10<span class="chem-sup">-4</span> mol)`
+                            },
+                            {
+                                title: "Step 2: Moles of OCl⁻ in diluted & original sample (1 mark)",
+                                content: `From OCl<span class="chem-sup">-</span> + 2I<span class="chem-sup">-</span> + 2H<span class="chem-sup">+</span> &rarr; I<span class="chem-sub">2</span> + Cl<span class="chem-sup">-</span> + H<span class="chem-sub">2</span>O (1 : 1 ratio):<br>
+                                Moles of OCl<span class="chem-sup">-</span> in 25.0 cm<span class="chem-sup">3</span> diluted bleach = 5.0375 &times; 10<span class="chem-sup">-4</span> mol<br>
+                                Moles of OCl<span class="chem-sup">-</span> in 250.0 cm<span class="chem-sup">3</span> (which came from 25.0 cm<span class="chem-sup">3</span> original bleach) = 5.0375 &times; 10<span class="chem-sup">-4</span> &times; <span class="fraction"><span class="fraction-top">250.0</span><span class="fraction-bottom">25.0</span></span> = <strong>5.0375 &times; 10<span class="chem-sup">-3</span> mol</strong>`
+                            },
+                            {
+                                title: "Step 3: Concentration of OCl⁻ in commercial bleach (1 mark)",
+                                content: `Concentration of OCl<span class="chem-sup">-</span> = <span class="fraction"><span class="fraction-top">5.0375 &times; 10<span class="chem-sup">-3</span> mol</span><span class="fraction-bottom">(25.0 / 1000) dm<span class="chem-sup">3</span></span></span> = <strong>0.202 mol dm<span class="chem-sup">-3</span></strong>`
+                            }
+                        ],
+                        finalAnswer: `0.202 mol dm<span class="chem-sup">-3</span>`,
+                        quiz: {
+                            question: "Why did we divide by 0.0250 dm³ at the very end?",
+                            options: [
+                                "Because in Step 1, 25.0 cm³ of the original undiluted bleach was pipetted into the volumetric flask.",
+                                "Because 25.0 cm³ of KI was added.",
+                                "Because the burette holds 25.0 cm³."
+                            ],
+                            correct: 0,
+                            explanation: "Brilliant! All 5.04 × 10⁻³ mol of OCl⁻ in the 250.0 cm³ volumetric flask originally came from the 25.0 cm³ of commercial bleach in Step 1."
+                        }
+                    }
+                ]
+            }
+        ];
+
+        // ==========================================
+        // STATE MANAGEMENT
+        // ==========================================
+        let currentQuestionIndex = 0;
+        // Track revealed steps, hints, and completed quizzes per subpart ID
+        let state = {
+            revealedHints: {},
+            revealedSteps: {}, // subpartId -> number of steps revealed
+            completedParts: {}, // subpartId -> boolean
+            quizAnswers: {} // subpartId -> selected option index
+        };
+
+        const totalSubparts = questionsData.reduce((acc, q) => acc + q.parts.length, 0);
+
+        // ==========================================
+        // SVG VISUAL GENERATORS
+        // ==========================================
+        function getVisualHTML(type) {
+            if (type === "oxalic-structure") {
+                return `
+                <div class="my-4 p-4 bg-white rounded-xl border border-slate-200 flex flex-col items-center justify-center shadow-inner">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Structure of Oxalic Acid (H₂C₂O₄)</span>
+                    <svg viewBox="0 0 320 130" class="w-full max-w-xs h-auto">
+                        <!-- Left OH -->
+                        <text x="20" y="98" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#e11d48">H—O</text>
+                        <!-- Bond O to C1 -->
+                        <line x1="65" y1="92" x2="105" y2="70" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- C1 -->
+                        <text x="110" y="74" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#1e293b">C</text>
+                        <!-- Double bond C1 to O1 -->
+                        <line x1="113" y1="54" x2="113" y2="28" stroke="#334155" stroke-width="2.5"/>
+                        <line x1="120" y1="54" x2="120" y2="28" stroke="#334155" stroke-width="2.5"/>
+                        <text x="110" y="22" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#e11d48">O</text>
+                        <!-- Single bond C1 to C2 -->
+                        <line x1="130" y1="68" x2="185" y2="68" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- C2 -->
+                        <text x="190" y="74" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#1e293b">C</text>
+                        <!-- Double bond C2 to O2 -->
+                        <line x1="193" y1="54" x2="193" y2="28" stroke="#334155" stroke-width="2.5"/>
+                        <line x1="200" y1="54" x2="200" y2="28" stroke="#334155" stroke-width="2.5"/>
+                        <text x="190" y="22" font-family="Inter, sans-serif" font-size="18" font-weight="700" fill="#e11d48">O</text>
+                        <!-- Bond C2 to Right OH -->
+                        <line x1="208" y1="70" x2="248" y2="92" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- Right OH -->
+                        <text x="252" y="98" font-family="Inter, sans-serif" font-size="16" font-weight="700" fill="#e11d48">O—H</text>
+                        <!-- Highlight boxes for -COOH -->
+                        <rect x="14" y="4" width="122" height="106" rx="10" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="4 3"/>
+                        <rect x="182" y="4" width="122" height="106" rx="10" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-dasharray="4 3"/>
+                        <text x="75" y="124" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#7c3aed">Carboxyl group (-COOH)</text>
+                        <text x="243" y="124" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="600" fill="#7c3aed">Carboxyl group (-COOH)</text>
+                    </svg>
+                </div>`;
+            }
+
+            if (type === "conductivity-graph") {
+                return `
+                <div class="my-4 p-4 bg-white rounded-xl border border-indigo-100 flex flex-col items-center shadow-sm">
+                    <div class="flex items-center justify-between w-full mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Interactive Conductimetric Titration Curve</span>
+                        <span class="text-xs text-slate-500">V-Shaped Intersection</span>
+                    </div>
+                    <svg viewBox="0 0 400 220" class="w-full max-w-md h-auto">
+                        <!-- Grid lines -->
+                        <line x1="60" y1="30" x2="360" y2="30" stroke="#f1f5f9" stroke-width="1"/>
+                        <line x1="60" y1="70" x2="360" y2="70" stroke="#f1f5f9" stroke-width="1"/>
+                        <line x1="60" y1="110" x2="360" y2="110" stroke="#f1f5f9" stroke-width="1"/>
+                        <line x1="60" y1="150" x2="360" y2="150" stroke="#f1f5f9" stroke-width="1"/>
+                        
+                        <!-- Axes -->
+                        <line x1="60" y1="20" x2="60" y2="180" stroke="#334155" stroke-width="2"/>
+                        <line x1="60" y1="180" x2="370" y2="180" stroke="#334155" stroke-width="2"/>
+                        
+                        <!-- Axis Labels -->
+                        <text x="20" y="100" transform="rotate(-90 20,100)" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#334155">Electrical Conductivity</text>
+                        <text x="215" y="210" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#334155">Volume of Na₂SO₄(aq) added / cm³</text>
+
+                        <!-- Best fit line 1 (decreasing) -->
+                        <line x1="70" y1="45" x2="210" y2="155" stroke="#4f46e5" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Best fit line 2 (increasing) -->
+                        <line x1="210" y1="155" x2="345" y2="55" stroke="#4f46e5" stroke-width="3" stroke-linecap="round"/>
+
+                        <!-- Data points -->
+                        <circle cx="80" cy="53" r="3.5" fill="#1e1b4b"/>
+                        <circle cx="115" cy="80" r="3.5" fill="#1e1b4b"/>
+                        <circle cx="150" cy="108" r="3.5" fill="#1e1b4b"/>
+                        <circle cx="185" cy="135" r="3.5" fill="#1e1b4b"/>
+                        <circle cx="240" cy="133" r="3.5" fill="#1e1b4b"/>
+                        <circle cx="275" cy="107" r="3.5" fill="#1e1b4b"/>
+                        <circle cx="310" cy="81" r="3.5" fill="#1e1b4b"/>
+
+                        <!-- Equivalence point highlight -->
+                        <line x1="210" y1="155" x2="210" y2="180" stroke="#e11d48" stroke-width="2" stroke-dasharray="4 3"/>
+                        <circle cx="210" cy="155" r="5.5" fill="#e11d48" stroke="#ffffff" stroke-width="1.5"/>
+                        <text x="210" y="194" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" font-weight="700" fill="#e11d48">Equivalence Point</text>
+
+                        <!-- Annotations -->
+                        <text x="125" y="48" font-family="Inter, sans-serif" font-size="9.5" fill="#475569">Ba²⁺ & SO₄²⁻ precipitate</text>
+                        <text x="125" y="60" font-family="Inter, sans-serif" font-size="9.5" fill="#475569">(ions removed)</text>
+                        <text x="285" y="42" font-family="Inter, sans-serif" font-size="9.5" fill="#475569">Excess Na⁺ & SO₄²⁻</text>
+                        <text x="285" y="54" font-family="Inter, sans-serif" font-size="9.5" fill="#475569">added</text>
+                    </svg>
+                </div>`;
+            }
+
+            if (type === "mohr-diagram") {
+                return `
+                <div class="my-4 p-4 bg-white rounded-xl border border-amber-200 flex flex-col items-center shadow-sm fade-in">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-700 mb-2">Model Exam Diagram: Mohr's Method Set-up</span>
+                    <svg viewBox="0 0 430 285" class="w-full max-w-lg h-auto bg-white">
+                        <!-- Retort Stand Base (extends beneath conical flask & white tile) -->
+                        <rect x="44" y="266" width="122" height="5" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+                        <!-- Retort Stand Vertical Rod -->
+                        <rect x="59" y="28" width="5" height="238" fill="#ffffff" stroke="#0f172a" stroke-width="1.5"/>
+
+                        <!-- Bosshead & Horizontal Clamp Arm -->
+                        <!-- Left screw tail -->
+                        <rect x="44" y="100" width="9" height="4" fill="#ffffff" stroke="#0f172a" stroke-width="1.3"/>
+                        <!-- Bosshead block on vertical rod -->
+                        <rect x="53" y="96" width="16" height="12" fill="#ffffff" stroke="#0f172a" stroke-width="1.4"/>
+                        <!-- Horizontal clamp rod -->
+                        <rect x="69" y="100" width="32" height="4" fill="#ffffff" stroke="#0f172a" stroke-width="1.3"/>
+                        <!-- Clamp jaws gripping burette -->
+                        <rect x="101" y="96" width="5" height="12" fill="#ffffff" stroke="#0f172a" stroke-width="1.4"/>
+                        <rect x="118" y="96" width="4" height="12" fill="#ffffff" stroke="#0f172a" stroke-width="1.4"/>
+
+                        <!-- Burette Body (open top, tapered bottom above stopcock) -->
+                        <polyline points="106,38 106,174 110,182 110,188" fill="none" stroke="#0f172a" stroke-width="1.5"/>
+                        <polyline points="118,38 118,174 114,182 114,188" fill="none" stroke="#0f172a" stroke-width="1.5"/>
+
+                        <!-- Meniscus line near top third -->
+                        <path d="M106,72 Q112,74 118,72" fill="none" stroke="#0f172a" stroke-width="1.4"/>
+
+                        <!-- Fine Graduation Tick Marks along left inner wall -->
+                        <g stroke="#0f172a" stroke-width="1">
+                            <line x1="106" y1="45" x2="111" y2="45"/>
+                            <line x1="106" y1="49" x2="110" y2="49"/>
+                            <line x1="106" y1="53" x2="111" y2="53"/>
+                            <line x1="106" y1="57" x2="110" y2="57"/>
+                            <line x1="106" y1="61" x2="111" y2="61"/>
+                            <line x1="106" y1="65" x2="110" y2="65"/>
+                            <line x1="106" y1="69" x2="111" y2="69"/>
+                            <line x1="106" y1="76" x2="110" y2="76"/>
+                            <line x1="106" y1="80" x2="111" y2="80"/>
+                            <line x1="106" y1="84" x2="110" y2="84"/>
+                            <line x1="106" y1="88" x2="111" y2="88"/>
+                            <line x1="106" y1="92" x2="110" y2="92"/>
+                            <line x1="106" y1="112" x2="111" y2="112"/>
+                            <line x1="106" y1="116" x2="110" y2="116"/>
+                            <line x1="106" y1="120" x2="111" y2="120"/>
+                            <line x1="106" y1="124" x2="110" y2="124"/>
+                            <line x1="106" y1="128" x2="111" y2="128"/>
+                            <line x1="106" y1="132" x2="110" y2="132"/>
+                            <line x1="106" y1="136" x2="111" y2="136"/>
+                            <line x1="106" y1="140" x2="110" y2="140"/>
+                            <line x1="106" y1="144" x2="111" y2="144"/>
+                            <line x1="106" y1="148" x2="110" y2="148"/>
+                            <line x1="106" y1="152" x2="111" y2="152"/>
+                            <line x1="106" y1="156" x2="110" y2="156"/>
+                            <line x1="106" y1="160" x2="111" y2="160"/>
+                            <line x1="106" y1="164" x2="110" y2="164"/>
+                            <line x1="106" y1="168" x2="111" y2="168"/>
+                        </g>
+
+                        <!-- Stopcock Valve & Right Handle -->
+                        <rect x="106" y="188" width="12" height="5" fill="#ffffff" stroke="#0f172a" stroke-width="1.4"/>
+                        <line x1="103" y1="190.5" x2="106" y2="190.5" stroke="#0f172a" stroke-width="1.5"/>
+                        <line x1="118" y1="190.5" x2="122" y2="190.5" stroke="#0f172a" stroke-width="1.5"/>
+                        <rect x="122" y="185" width="3" height="11" fill="#ffffff" stroke="#0f172a" stroke-width="1.4"/>
+                        <!-- Burette Delivery Tip -->
+                        <polyline points="110,193 111,214 113,214 114,193" fill="none" stroke="#0f172a" stroke-width="1.4"/>
+
+                        <!-- Conical Flask below Burette Tip -->
+                        <path d="M103,204 Q105,205 105,208 L105,221 L89,257 Q87,262 93,263 L131,263 Q137,262 135,257 L119,221 L119,208 Q119,205 121,204" fill="none" stroke="#0f172a" stroke-width="1.5"/>
+                        <!-- Liquid Level Line inside Conical Flask -->
+                        <line x1="93" y1="249" x2="131" y2="249" stroke="#0f172a" stroke-width="1.4"/>
+
+                        <!-- White Tile under Conical Flask -->
+                        <line x1="76" y1="264.5" x2="148" y2="264.5" stroke="#0f172a" stroke-width="2"/>
+
+                        <!-- Textbook Pointer Lines & Serif Labels -->
+                        <!-- Label 1: 0.105 mol dm⁻³ silver nitrate solution -->
+                        <line x1="113" y1="90" x2="152" y2="90" stroke="#0f172a" stroke-width="1.2"/>
+                        <text x="158" y="94" font-family="Georgia, 'Times New Roman', serif" font-size="16" fill="#0f172a">0.105 mol dm<tspan dy="-6" font-size="11">−3</tspan><tspan dy="6" font-size="16"> silver</tspan></text>
+                        <text x="158" y="116" font-family="Georgia, 'Times New Roman', serif" font-size="16" fill="#0f172a">nitrate solution</text>
+
+                        <!-- Label 2: water sample + potassium chromate solution -->
+                        <line x1="127" y1="256" x2="196" y2="184" stroke="#0f172a" stroke-width="1.2"/>
+                        <text x="199" y="186" font-family="Georgia, 'Times New Roman', serif" font-size="16" fill="#0f172a">water sample + potassium</text>
+                        <text x="199" y="208" font-family="Georgia, 'Times New Roman', serif" font-size="16" fill="#0f172a">chromate solution</text>
+
+                        <!-- Label 3: white tile -->
+                        <line x1="138" y1="264.5" x2="201" y2="246" stroke="#0f172a" stroke-width="1.2"/>
+                        <text x="206" y="250" font-family="Georgia, 'Times New Roman', serif" font-size="16" fill="#0f172a">white tile</text>
+                    </svg>
+                </div>`;
+            }
+
+            if (type === "sulphite-titration-diagram") {
+                return `
+                <div class="my-4 p-4 bg-emerald-50/60 rounded-2xl border border-emerald-200 flex flex-col items-center shadow-sm fade-in">
+                    <div class="flex flex-wrap items-center justify-between w-full gap-2 mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 flex items-center">
+                            <i class="fa-solid fa-flask mr-1.5 text-emerald-600"></i>
+                            Redox Titration Set-up: Acidified KMnO<span class="chem-sub">4</span> vs. Sodium Sulphite
+                        </span>
+                        <span class="text-[11px] font-semibold bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                            Self-Indicating (No Indicator Needed)
+                        </span>
+                    </div>
+                    <svg viewBox="0 0 460 285" class="w-full max-w-lg h-auto bg-white rounded-xl border border-emerald-100 p-2">
+                        <!-- White Tile -->
+                        <rect x="125" y="250" width="130" height="8" rx="2" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5"/>
+                        <text x="285" y="257" font-family="Inter, sans-serif" font-size="11" fill="#475569">White tile</text>
+                        <line x1="255" y1="254" x2="280" y2="254" stroke="#64748b" stroke-width="1"/>
+
+                        <!-- Conical Flask -->
+                        <path d="M175,162 L175,180 L142,243 Q140,248 146,248 L234,248 Q240,248 238,243 L205,180 L205,162" fill="none" stroke="#334155" stroke-width="2"/>
+                        <!-- Liquid in Conical Flask (Colourless Sodium Sulphite solution) -->
+                        <path d="M156,216 L144,242 Q142,246 147,246 L233,246 Q238,246 236,242 L224,216 Z" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+                        
+                        <!-- Burette Tube -->
+                        <rect x="183" y="18" width="14" height="110" fill="none" stroke="#334155" stroke-width="2"/>
+                        <!-- Deep Purple Acidified KMnO4 Liquid in Burette -->
+                        <rect x="184.5" y="36" width="11" height="91" fill="#7e22ce" opacity="0.88"/>
+                        <!-- Top Meniscus Highlight -->
+                        <line x1="184.5" y1="36" x2="195.5" y2="36" stroke="#f3e8ff" stroke-width="1.5"/>
+                        <!-- Burette Graduation Ticks -->
+                        <line x1="183" y1="45" x2="188" y2="45" stroke="#ffffff" stroke-width="1"/>
+                        <line x1="183" y1="60" x2="188" y2="60" stroke="#ffffff" stroke-width="1"/>
+                        <line x1="183" y1="75" x2="188" y2="75" stroke="#ffffff" stroke-width="1"/>
+                        <line x1="183" y1="90" x2="188" y2="90" stroke="#ffffff" stroke-width="1"/>
+                        <line x1="183" y1="105" x2="188" y2="105" stroke="#ffffff" stroke-width="1"/>
+                        
+                        <!-- Stopcock & Tip -->
+                        <line x1="187" y1="128" x2="187" y2="148" stroke="#334155" stroke-width="2"/>
+                        <line x1="193" y1="128" x2="193" y2="148" stroke="#334155" stroke-width="2"/>
+                        <rect x="177" y="134" width="26" height="6" rx="2" fill="#94a3b8" stroke="#334155" stroke-width="1.5"/>
+                        <!-- Falling purple drop -->
+                        <circle cx="190" cy="155" r="2.8" fill="#7e22ce"/>
+
+                        <!-- Stand & Clamp (Left side) -->
+                        <rect x="75" y="250" width="45" height="6" fill="#64748b"/>
+                        <rect x="94" y="14" width="5" height="236" fill="#64748b"/>
+                        <rect x="99" y="82" width="84" height="5" fill="#475569"/>
+                        <rect x="179" y="79" width="22" height="11" rx="2" fill="none" stroke="#334155" stroke-width="1.5"/>
+
+                        <!-- Labels & Pointer Lines -->
+                        <!-- Top Meniscus Tip -->
+                        <line x1="197" y1="36" x2="235" y2="28" stroke="#7e22ce" stroke-width="1.2" stroke-dasharray="3 2"/>
+                        <text x="240" y="26" font-family="Inter, sans-serif" font-size="10.5" font-weight="700" fill="#6b21a8">Read top of meniscus</text>
+                        <text x="240" y="38" font-family="Inter, sans-serif" font-size="9.5" fill="#7e22ce">(dark purple solution)</text>
+
+                        <!-- Burette Label -->
+                        <line x1="197" y1="54" x2="235" y2="54" stroke="#334155" stroke-width="1.2"/>
+                        <text x="240" y="57" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#1e293b">Burette</text>
+
+                        <!-- Standard Acidified KMnO4 in Burette -->
+                        <line x1="197" y1="84" x2="235" y2="84" stroke="#334155" stroke-width="1.2"/>
+                        <text x="240" y="81" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#1e293b">Standard acidified KMnO₄(aq)</text>
+                        <text x="240" y="94" font-family="Inter, sans-serif" font-size="10" fill="#475569">(0.0100 mol dm⁻³, purple)</text>
+
+                        <!-- Conical Flask -->
+                        <line x1="218" y1="190" x2="245" y2="178" stroke="#334155" stroke-width="1.2"/>
+                        <text x="250" y="181" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#1e293b">Conical flask</text>
+
+                        <!-- Sodium Sulphite Solution -->
+                        <line x1="228" y1="224" x2="255" y2="212" stroke="#059669" stroke-width="1.5"/>
+                        <text x="260" y="211" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="#065f46">25.0 cm³ sodium sulphite</text>
+                        <text x="260" y="224" font-family="Inter, sans-serif" font-size="10.5" font-weight="600" fill="#047857">solution, Na₂SO₃(aq)</text>
+                        <text x="260" y="236" font-family="Inter, sans-serif" font-size="9.5" fill="#475569">(colourless)</text>
+                    </svg>
+                </div>`;
+            }
+
+            return "";
+        }
+
+        // ==========================================
+        // RENDERING LOGIC
+        // ==========================================
+        function renderSidebar() {
+            const nav = document.getElementById("question-nav");
+            nav.innerHTML = questionsData.map((q, idx) => {
+                const isActive = idx === currentQuestionIndex;
+                const completedInQ = q.parts.filter(p => state.completedParts[p.id]).length;
+                const allDone = completedInQ === q.parts.length;
+
+                return `
+                <button onclick="selectQuestion(${idx})"
+                    class="w-full text-left px-3 py-2.5 rounded-xl flex items-center justify-between transition-all ${
+                        isActive 
+                        ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold shadow-sm' 
+                        : 'text-slate-600 hover:bg-slate-100 border border-transparent'
+                    }">
+                    <div class="flex items-center space-x-2.5 min-w-0">
+                        <span class="w-7 h-7 rounded-lg flex items-center justify-center text-xs flex-shrink-0 ${
+                            allDone 
+                            ? 'bg-emerald-100 text-emerald-700' 
+                            : isActive ? 'bg-indigo-600 text-white' : 'bg-slate-200/70 text-slate-600'
+                        }">
+                            ${allDone ? '<i class="fa-solid fa-check"></i>' : `<i class="fa-solid ${q.icon}"></i>`}
+                        </span>
+                        <div class="truncate">
+                            <div class="text-sm truncate">${q.shortTitle}</div>
+                            <div class="text-[11px] text-slate-400 font-normal">${completedInQ}/${q.parts.length} parts &bull; ${q.marks} marks</div>
+                        </div>
+                    </div>
+                </button>`;
+            }).join("");
+
+            // Update global progress header
+            const totalDone = Object.values(state.completedParts).filter(Boolean).length;
+            document.getElementById("progress-text").textContent = `${totalDone} / ${totalSubparts}`;
+        }
+
+        function renderWorkspace() {
+            const q = questionsData[currentQuestionIndex];
+            const workspace = document.getElementById("workspace");
+
+            // Header Card for the Question
+            let html = `
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden fade-in">
+                <div class="bg-gradient-to-r from-slate-900 to-slate-800 px-6 py-5 text-white flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center space-x-2 text-indigo-300 text-xs font-semibold uppercase tracking-wider mb-1">
+                            <span>Question ${q.id} of ${questionsData.length}</span>
+                            <span>&bull;</span>
+                            <span>${q.topic}</span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl font-bold">${q.shortTitle}</h2>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-xl text-right">
+                        <div class="text-xs text-slate-300">Section Total</div>
+                        <div class="text-lg font-extrabold text-white">${q.marks} Marks</div>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <div class="text-slate-700 text-sm sm:text-base leading-relaxed">
+                        ${q.prompt}
+                    </div>
+                    ${q.visualPrompt ? getVisualHTML(q.visualPrompt) : ""}
+                </div>
+            </div>
+            `;
+
+            // Render Each Sub-part Card
+            q.parts.forEach((part) => {
+                const stepsShown = state.revealedSteps[part.id] || 0;
+                const totalSteps = part.steps.length;
+                const allStepsShown = stepsShown >= totalSteps;
+                const hintShown = !!state.revealedHints[part.id];
+                const isCompleted = !!state.completedParts[part.id];
+                const selectedQuizOpt = state.quizAnswers[part.id];
+
+                html += `
+                <div id="part-${part.id}" class="bg-white rounded-2xl border ${isCompleted ? 'border-emerald-300 ring-1 ring-emerald-100' : 'border-slate-200'} shadow-sm p-6 transition-all fade-in">
+                    <!-- Sub-question Header -->
+                    <div class="flex items-start justify-between gap-4 mb-4">
+                        <div class="flex items-start space-x-3">
+                            <span class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-800 font-bold text-sm flex-shrink-0 mt-0.5">
+                                ${part.label}
+                            </span>
+                            <h3 class="text-base sm:text-lg font-semibold text-slate-900 leading-snug">
+                                ${part.question}
+                            </h3>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 font-semibold text-xs whitespace-nowrap flex-shrink-0">
+                            (${part.marks} ${part.marks === 1 ? 'mark' : 'marks'})
+                        </span>
+                    </div>
+
+                    <!-- Action Toolbar: Hint & Step Reveal -->
+                    <div class="flex flex-wrap items-center gap-2.5 mb-4">
+                        <button onclick="toggleHint('${part.id}')" class="px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all ${
+                            hintShown 
+                            ? 'bg-amber-100 text-amber-900 border border-amber-300' 
+                            : 'bg-slate-100 hover:bg-amber-50 text-slate-700 hover:text-amber-800 border border-slate-200'
+                        }">
+                            <i class="fa-regular fa-lightbulb"></i>
+                            <span>${hintShown ? 'Hide Hint' : 'Need a Hint?'}</span>
+                        </button>
+
+                        ${!allStepsShown ? `
+                        <button onclick="revealNextStep('${part.id}')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center space-x-1.5 shadow-sm transition-all">
+                            <i class="fa-solid fa-shoe-prints"></i>
+                            <span>${stepsShown === 0 ? 'Show Step 1' : `Next Step (${stepsShown}/${totalSteps})`}</span>
+                        </button>
+                        ` : ''}
+
+                        ${!allStepsShown && totalSteps > 1 ? `
+                        <button onclick="revealAllSteps('${part.id}')" class="px-3.5 py-2 rounded-xl text-xs font-medium text-indigo-600 hover:bg-indigo-50 border border-indigo-200 transition-all">
+                            Reveal Full Solution
+                        </button>
+                        ` : ''}
+
+                        ${allStepsShown ? `
+                        <button onclick="resetPart('${part.id}')" class="px-3 py-2 rounded-xl text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Collapse Steps
+                        </button>
+                        ` : ''}
+                    </div>
+
+                    <!-- Hint Drawer -->
+                    ${hintShown ? `
+                    <div class="mb-4 p-4 rounded-xl bg-amber-50/90 border border-amber-200 text-amber-900 text-sm fade-in">
+                        <div class="font-semibold text-xs uppercase tracking-wider text-amber-700 mb-1">
+                            <i class="fa-solid fa-compass mr-1"></i> Tutor Hint
+                        </div>
+                        <p>${part.hint}</p>
+                    </div>
+                    ` : ''}
+
+                    <!-- Optional Extra Concept Card (Always visible when defined, e.g. Question 1c) -->
+                    ${part.extraNote ? part.extraNote : ''}
+
+                    <!-- Step-by-Step Breakdown Container -->
+                    ${stepsShown > 0 ? `
+                    <div class="space-y-3 mt-4 border-t border-slate-100 pt-4">
+                        <!-- Key Concept Banner -->
+                        <div class="p-3.5 rounded-xl bg-sky-50 border border-sky-200/80 text-sky-900 text-xs sm:text-sm">
+                            <span class="font-bold text-sky-800"><i class="fa-solid fa-book-open mr-1.5"></i>Key Principle:</span> ${part.concept}
+                        </div>
+
+                        ${part.visualType ? getVisualHTML(part.visualType) : ""}
+
+                        <!-- Individual Steps -->
+                        <div class="space-y-2.5">
+                            ${part.steps.slice(0, stepsShown).map((step, sIdx) => `
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/90 fade-in">
+                                <div class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">
+                                    ${step.title}
+                                </div>
+                                <div class="text-sm text-slate-800 leading-relaxed">
+                                    ${step.content}
+                                </div>
+                            </div>
+                            `).join("")}
+                        </div>
+
+                        <!-- Final Official Marking Scheme Answer (Shown when all steps revealed) -->
+                        ${allStepsShown ? `
+                        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 fade-in">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">
+                                    <i class="fa-solid fa-check-double mr-1"></i> Final Marking Scheme Answer
+                                </span>
+                                <span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
+                                    +${part.marks} ${part.marks === 1 ? 'Mark' : 'Marks'}
+                                </span>
+                            </div>
+                            <div class="text-sm sm:text-base font-semibold text-emerald-950 mt-1">
+                                ${part.finalAnswer}
+                            </div>
+                        </div>
+
+                        <!-- Interactive Concept Check Quiz -->
+                        ${part.quiz ? `
+                        <div class="mt-4 p-4 rounded-xl bg-indigo-50/60 border border-indigo-100 fade-in">
+                            <div class="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-2">
+                                <i class="fa-solid fa-brain mr-1"></i> Quick Concept Check
+                            </div>
+                            <p class="text-sm font-medium text-slate-800 mb-3">${part.quiz.question}</p>
+                            <div class="space-y-2">
+                                ${part.quiz.options.map((opt, oIdx) => {
+                                    const isSelected = selectedQuizOpt === oIdx;
+                                    const isCorrect = part.quiz.correct === oIdx;
+                                    let btnStyle = "bg-white border-slate-200 hover:border-indigo-300 text-slate-700";
+                                    if (selectedQuizOpt !== undefined) {
+                                        if (isCorrect) {
+                                            btnStyle = "bg-emerald-100 border-emerald-400 text-emerald-900 font-medium";
+                                        } else if (isSelected && !isCorrect) {
+                                            btnStyle = "bg-rose-100 border-rose-400 text-rose-900";
+                                        } else {
+                                            btnStyle = "bg-white/60 border-slate-200 text-slate-400";
+                                        }
+                                    }
+                                    return `
+                                    <button onclick="answerQuiz('${part.id}', ${oIdx})" class="w-full text-left px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm transition-all flex items-center justify-between ${btnStyle}">
+                                        <span>${opt}</span>
+                                        ${selectedQuizOpt !== undefined && isCorrect ? '<i class="fa-solid fa-circle-check text-emerald-600 ml-2"></i>' : ''}
+                                        ${selectedQuizOpt !== undefined && isSelected && !isCorrect ? '<i class="fa-solid fa-circle-xmark text-rose-600 ml-2"></i>' : ''}
+                                    </button>`;
+                                }).join("")}
+                            </div>
+                            ${selectedQuizOpt !== undefined ? `
+                            <div class="mt-2.5 text-xs ${selectedQuizOpt === part.quiz.correct ? 'text-emerald-800' : 'text-rose-800'} font-medium">
+                                ${part.quiz.explanation}
+                            </div>
+                            ` : ''}
+                        </div>
+                        ` : ''}
+                        ` : ''}
+                    </div>
+                    ` : ''}
+                </div>
+                `;
+            });
+
+            workspace.innerHTML = html;
+
+            // Update bottom navigation buttons
+            document.getElementById("prev-btn").disabled = currentQuestionIndex === 0;
+            document.getElementById("next-btn").disabled = currentQuestionIndex === questionsData.length - 1;
+        }
+
+        // ==========================================
+        // INTERACTION HANDLERS
+        // ==========================================
+        function selectQuestion(index) {
+            currentQuestionIndex = index;
+            renderSidebar();
+            renderWorkspace();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function navigateQuestion(delta) {
+            const newIdx = currentQuestionIndex + delta;
+            if (newIdx >= 0 && newIdx < questionsData.length) {
+                selectQuestion(newIdx);
+            }
+        }
+
+        function toggleHint(partId) {
+            state.revealedHints[partId] = !state.revealedHints[partId];
+            renderWorkspace();
+        }
+
+        function findPart(partId) {
+            for (const q of questionsData) {
+                const found = q.parts.find(p => p.id === partId);
+                if (found) return found;
+            }
+            return null;
+        }
+
+        function revealNextStep(partId) {
+            const part = findPart(partId);
+            if (!part) return;
+            const current = state.revealedSteps[partId] || 0;
+            if (current < part.steps.length) {
+                state.revealedSteps[partId] = current + 1;
+                if (state.revealedSteps[partId] === part.steps.length) {
+                    state.completedParts[partId] = true;
+                    showToast(`Part ${part.label} completed! (+${part.marks} marks reviewed)`);
+                }
+                renderSidebar();
+                renderWorkspace();
+            }
+        }
+
+        function revealAllSteps(partId) {
+            const part = findPart(partId);
+            if (!part) return;
+            state.revealedSteps[partId] = part.steps.length;
+            state.completedParts[partId] = true;
+            showToast(`Full solution unlocked for Part ${part.label}`);
+            renderSidebar();
+            renderWorkspace();
+        }
+
+        function resetPart(partId) {
+            state.revealedSteps[partId] = 0;
+            state.completedParts[partId] = false;
+            delete state.quizAnswers[partId];
+            renderSidebar();
+            renderWorkspace();
+        }
+
+        function answerQuiz(partId, optionIndex) {
+            state.quizAnswers[partId] = optionIndex;
+            const part = findPart(partId);
+            if (part && optionIndex === part.quiz.correct) {
+                showToast("Spot on! Concept mastered.", "success");
+            }
+            renderWorkspace();
+        }
+
+        function resetAllProgress() {
+            state = {
+                revealedHints: {},
+                revealedSteps: {},
+                completedParts: {},
+                quizAnswers: {}
+            };
+            renderSidebar();
+            renderWorkspace();
+            showToast("All progress reset.", "info");
+        }
+
+        // Custom Toast Notification (No alert() used!)
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            const bgClass = type === "success" ? "bg-slate-900 text-white border-slate-700" : "bg-indigo-600 text-white border-indigo-500";
+            toast.className = `${bgClass} border px-4 py-2.5 rounded-xl shadow-lg text-xs font-medium flex items-center space-x-2 fade-in`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = "0";
+                toast.style.transition = "opacity 0.3s ease";
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // ==========================================
+        // INITIALIZE APP ON LOAD
+        // ==========================================
+        window.onload = function() {
+            renderSidebar();
+            renderWorkspace();
+        };
+    </script>
+</body>
+</html>
